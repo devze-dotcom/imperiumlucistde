@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitor de Telemetria - HC-SR04</title>
+    <!-- Fonte Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <!-- Barra Superior -->
+        <header class="top-header">
+            <div class="brand">
+                <div class="brand-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                    </svg>
+                </div>
+                <div>
+                    <h1>Imperium Lucis <span class="badge-iot">IoT Monitor</span></h1>
+                    <p class="subtitle">Sensor Ultrassônico HC-SR04 &bull; Porta <code>/dev/ttyUSB0</code></p>
+                </div>
+            </div>
+            
+            <div class="header-status">
+                <div id="connectionStatus" class="status-indicator status-waiting">
+                    <span class="status-dot"></span>
+                    <span class="status-label">Aguardando dados...</span>
+                </div>
+                <div class="clock" id="systemClock">--:--:--</div>
+            </div>
+        </header>
+
+        <!-- Grid Principal -->
+        <main class="dashboard-grid">
+            <!-- Card Principal: Distância em Destaque -->
+            <section class="card primary-card">
+                <div class="card-header">
+                    <h2>Distância em Tempo Real</h2>
+                    <span class="sensor-badge" id="sensorIdLabel">Sensor: --</span>
+                </div>
+
+                <div class="distance-display-container">
+                    <div class="distance-value-wrapper">
+                        <span class="distance-number" id="currentDistance">--</span>
+                        <span class="distance-unit">cm</span>
+                    </div>
+
+                    <!-- Indicador Visual de Nível / Barra de Proximidade -->
+                    <div class="proximity-meter-container">
+                        <div class="meter-bar-background">
+                            <div class="meter-bar-fill" id="meterFill" style="width: 0%;"></div>
+                        </div>
+                        <div class="meter-labels">
+                            <span>0 cm (Crítico)</span>
+                            <span>50 cm</span>
+                            <span>150 cm+ (Livre)</span>
+                        </div>
+                    </div>
+
+                    <!-- Tag de Estado de Proximidade -->
+                    <div class="proximity-state-pill state-waiting" id="proximityState">
+                        Aguardando leitura do Arduino...
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <span class="meta-label">Última leitura:</span>
+                    <span class="meta-value" id="lastUpdated">--</span>
+                </div>
+            </section>
+
+            <!-- Cards de Estatísticas Rápidas -->
+            <section class="stats-section">
+                <div class="stat-card">
+                    <div class="stat-icon icon-min">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <polyline points="19 12 12 19 5 12"></polyline>
+                        </svg>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-label">Distância Mínima</span>
+                        <div class="stat-value"><span id="statMin">--</span> <small>cm</small></div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon icon-avg">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-label">Média da Sessão</span>
+                        <div class="stat-value"><span id="statAvg">--</span> <small>cm</small></div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon icon-max">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="19" x2="12" y2="5"></line>
+                            <polyline points="5 12 12 5 19 12"></polyline>
+                        </svg>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-label">Distância Máxima</span>
+                        <div class="stat-value"><span id="statMax">--</span> <small>cm</small></div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon icon-total">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                        </svg>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-label">Total de Amostras</span>
+                        <div class="stat-value"><span id="statTotal">0</span></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Seção do Gráfico em Tempo Real -->
+            <section class="card chart-card">
+                <div class="card-header">
+                    <h2>Histórico Dinâmico de Leituras</h2>
+                    <div class="chart-controls">
+                        <span class="refresh-indicator">Frequência: ~1s</span>
+                        <button id="btnPause" class="btn-control">Pausar</button>
+                    </div>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="telemetryChart"></canvas>
+                </div>
+            </section>
+
+            <!-- Seção de Tabela de Eventos Recentes -->
+            <section class="card log-card">
+                <div class="card-header">
+                    <h2>Últimas Leituras Recebidas</h2>
+                    <span class="log-count" id="logCountLabel">Últimos 10 registros</span>
+                </div>
+                <div class="table-container">
+                    <table class="telemetry-table">
+                        <thead>
+                            <tr>
+                                <th>Horário</th>
+                                <th>Sensor</th>
+                                <th>Distância</th>
+                                <th>Alerta / Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="telemetryTableBody">
+                            <tr>
+                                <td colspan="4" class="empty-state">Nenhum dado capturado ainda. Conecte o Arduino e execute a ponte.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>Imperium Lucis &bull; Telemetria Arduino HC-SR04 &bull; Flask & Python Serial</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

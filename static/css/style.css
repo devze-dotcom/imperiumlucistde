@@ -1,0 +1,644 @@
+/* ==========================================================================
+   Variáveis e Reset Global
+   ========================================================================== */
+:root {
+    --bg-main: #0a0e17;
+    --bg-card: #121826;
+    --bg-card-hover: #182032;
+    --border-color: #1e293b;
+    --border-bright: #334155;
+    
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    
+    /* Cores de Alerta e Acento */
+    --color-cyan: #06b6d4;
+    --color-cyan-glow: rgba(6, 182, 212, 0.25);
+    --color-success: #10b981;
+    --color-success-glow: rgba(16, 185, 129, 0.25);
+    --color-warning: #f59e0b;
+    --color-warning-glow: rgba(245, 158, 11, 0.25);
+    --color-danger: #ef4444;
+    --color-danger-glow: rgba(239, 68, 68, 0.25);
+
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
+    --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    min-height: 100vh;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ==========================================================================
+   Layout Principal
+   ========================================================================== */
+.dashboard-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* ==========================================================================
+   Barra Superior (Header)
+   ========================================================================== */
+.top-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 18px 24px;
+    box-shadow: var(--shadow-card);
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.brand-icon {
+    width: 44px;
+    height: 44px;
+    background: linear-gradient(135deg, #0ea5e9, #6366f1);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 15px rgba(14, 165, 233, 0.4);
+}
+
+.brand-icon svg {
+    width: 24px;
+    height: 24px;
+    color: #fff;
+}
+
+.brand h1 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.badge-iot {
+    font-size: 0.7rem;
+    background: rgba(14, 165, 233, 0.15);
+    color: #38bdf8;
+    border: 1px solid rgba(14, 165, 233, 0.3);
+    padding: 3px 8px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.subtitle {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-top: 2px;
+}
+
+.subtitle code {
+    background: rgba(255, 255, 255, 0.08);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    color: #38bdf8;
+}
+
+.header-status {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 6px 14px;
+    border-radius: 30px;
+    border: 1px solid var(--border-color);
+    background: rgba(15, 23, 42, 0.6);
+}
+
+.status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.status-online {
+    border-color: rgba(16, 185, 129, 0.4);
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--color-success);
+}
+.status-online .status-dot {
+    background: var(--color-success);
+    box-shadow: 0 0 10px var(--color-success);
+    animation: pulse 1.5s infinite;
+}
+
+.status-waiting {
+    border-color: rgba(245, 158, 11, 0.4);
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--color-warning);
+}
+.status-waiting .status-dot {
+    background: var(--color-warning);
+    box-shadow: 0 0 10px var(--color-warning);
+}
+
+.status-offline {
+    border-color: rgba(239, 68, 68, 0.4);
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--color-danger);
+}
+.status-offline .status-dot {
+    background: var(--color-danger);
+}
+
+.clock {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.05);
+    padding: 6px 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+}
+
+/* ==========================================================================
+   Grid Principal do Dashboard
+   ========================================================================== */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+/* Card Base */
+.card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    box-shadow: var(--shadow-card);
+    display: flex;
+    flex-direction: column;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.card-header h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* ==========================================================================
+   Card Principal: Distância em Destaque
+   ========================================================================== */
+.primary-card {
+    grid-column: 1 / 2;
+}
+
+.sensor-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    background: rgba(255, 255, 255, 0.06);
+    color: #38bdf8;
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+}
+
+.distance-display-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 0;
+    gap: 20px;
+    flex: 1;
+}
+
+.distance-value-wrapper {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+}
+
+.distance-number {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 5rem;
+    font-weight: 800;
+    line-height: 1;
+    color: #fff;
+    letter-spacing: -2px;
+    text-shadow: 0 0 25px rgba(255, 255, 255, 0.15);
+    transition: var(--transition);
+}
+
+.distance-unit {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+/* Barra de Nível / Proximidade */
+.proximity-meter-container {
+    width: 100%;
+    max-width: 420px;
+}
+
+.meter-bar-background {
+    width: 100%;
+    height: 14px;
+    background: #1e293b;
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.meter-bar-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 20px;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.4s ease;
+    background-color: var(--color-cyan);
+}
+
+.meter-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 6px;
+}
+
+/* Pílula de Estado */
+.proximity-state-pill {
+    padding: 8px 18px;
+    border-radius: 30px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: var(--transition);
+}
+
+.state-safe {
+    background: var(--color-success-glow);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.4);
+}
+
+.state-warning {
+    background: var(--color-warning-glow);
+    color: #fbbf24;
+    border: 1px solid rgba(245, 158, 11, 0.4);
+}
+
+.state-critical {
+    background: var(--color-danger-glow);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    animation: pulse 1s infinite;
+}
+
+.state-waiting {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-muted);
+    border: 1px solid var(--border-color);
+}
+
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--border-color);
+    padding-top: 14px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.meta-value {
+    color: var(--text-secondary);
+    font-family: 'JetBrains Mono', monospace;
+}
+
+/* ==========================================================================
+   Seção de Estatísticas (4 Cards)
+   ========================================================================== */
+.stats-section {
+    grid-column: 2 / 3;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.stat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: var(--shadow-card);
+    transition: var(--transition);
+}
+
+.stat-card:hover {
+    border-color: var(--border-bright);
+    background: var(--bg-card-hover);
+    transform: translateY(-2px);
+}
+
+.stat-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat-icon svg {
+    width: 22px;
+    height: 22px;
+}
+
+.icon-min {
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+}
+
+.icon-avg {
+    background: rgba(168, 85, 247, 0.15);
+    color: #c084fc;
+}
+
+.icon-max {
+    background: rgba(251, 146, 60, 0.15);
+    color: #fb923c;
+}
+
+.icon-total {
+    background: rgba(52, 211, 153, 0.15);
+    color: #34d399;
+}
+
+.stat-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.stat-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #fff;
+    margin-top: 4px;
+}
+
+.stat-value small {
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: var(--text-secondary);
+}
+
+/* ==========================================================================
+   Card do Gráfico
+   ========================================================================== */
+.chart-card {
+    grid-column: 1 / 3;
+}
+
+.chart-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.refresh-indicator {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.btn-control {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 6px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-control:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    border-color: var(--border-bright);
+}
+
+.btn-control.active {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.4);
+    color: #f87171;
+}
+
+.chart-wrapper {
+    position: relative;
+    height: 280px;
+    width: 100%;
+}
+
+/* ==========================================================================
+   Tabela de Histórico / Log
+   ========================================================================== */
+.log-card {
+    grid-column: 1 / 3;
+}
+
+.log-count {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.table-container {
+    overflow-x: auto;
+}
+
+.telemetry-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.85rem;
+}
+
+.telemetry-table th {
+    padding: 12px 16px;
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.telemetry-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    color: var(--text-secondary);
+}
+
+.telemetry-table tr:hover td {
+    background: rgba(255, 255, 255, 0.02);
+    color: #fff;
+}
+
+.telemetry-table td:nth-child(1),
+.telemetry-table td:nth-child(3) {
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.badge-status {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.badge-status.safe {
+    background: var(--color-success-glow);
+    color: #34d399;
+}
+
+.badge-status.warning {
+    background: var(--color-warning-glow);
+    color: #fbbf24;
+}
+
+.badge-status.critical {
+    background: var(--color-danger-glow);
+    color: #f87171;
+}
+
+.empty-state {
+    text-align: center;
+    color: var(--text-muted);
+    padding: 32px !important;
+}
+
+/* ==========================================================================
+   Footer
+   ========================================================================== */
+.footer {
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    padding: 12px 0;
+}
+
+/* ==========================================================================
+   Animações
+   ========================================================================== */
+@keyframes pulse {
+    0% {
+        transform: scale(0.95);
+        opacity: 0.8;
+    }
+    50% {
+        transform: scale(1.15);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(0.95);
+        opacity: 0.8;
+    }
+}
+
+/* ==========================================================================
+   Responsividade (Mobile / Tablet)
+   ========================================================================== */
+@media (max-width: 900px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .primary-card,
+    .stats-section,
+    .chart-card,
+    .log-card {
+        grid-column: 1 / 2;
+    }
+
+    .stats-section {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .top-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 14px;
+    }
+
+    .header-status {
+        width: 100%;
+        justify-content: space-between;
+    }
+}
+
+@media (max-width: 540px) {
+    .stats-section {
+        grid-template-columns: 1fr;
+    }
+    
+    .distance-number {
+        font-size: 3.8rem;
+    }
+}
